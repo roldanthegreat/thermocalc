@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThermoCalc Hub</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    header {
+      background: #1e90ff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1rem;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    button {
+      width: 100%;
+      padding: 0.5rem;
+      background-color: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ThermoCalc Hub</h1>
+    <p>All-in-one Thermodynamics Calculator</p>
+  </header>
+  <div class="container" id="calculators">
+    <!-- Calculators will be dynamically inserted here -->
+  </div>
+
+  <script>
+    const calculators = [
+      {
+        name: "Ideal Gas Law",
+        inputs: ["Pressure (P in atm)", "Volume (V in L)", "Moles (n in mol)", "Temperature (T in K)"],
+        formula: (P, V, n, T) => `PV = ${P * V}, nRT = ${n * 0.0821 * T}`
+      },
+      {
+        name: "Heat Transfer",
+        inputs: ["Mass (m in kg)", "Specific Heat (c in J/kg·K)", "ΔT (K)"],
+        formula: (m, c, dT) => `Q = ${m * c * dT} J`
+      },
+      {
+        name: "Carnot Efficiency",
+        inputs: ["T_hot (K)", "T_cold (K)"],
+        formula: (T_hot, T_cold) => `η = ${(1 - (T_cold / T_hot)) * 100}%`
+      },
+      {
+        name: "First Law of Thermodynamics",
+        inputs: ["Heat (Q in J)", "Work (W in J)"],
+        formula: (Q, W) => `ΔU = ${Q - W} J`
+      },
+      {
+        name: "Entropy Change",
+        inputs: ["Heat (Q in J)", "Temperature (T in K)"],
+        formula: (Q, T) => `ΔS = ${Q / T} J/K`
+      },
+      {
+        name: "Work Done (Isothermal Expansion)",
+        inputs: ["n (mol)", "T (K)", "Vf (L)", "Vi (L)"],
+        formula: (n, T, Vf, Vi) => `W = ${(8.314 * n * T * Math.log(Vf / Vi)).toFixed(2)} J`
+      },
+      {
+        name: "Thermal Conductivity",
+        inputs: ["Q (J)", "k (W/m·K)", "A (m²)", "ΔT (K)", "d (m)"],
+        formula: (Q, k, A, dT, d) => `t = ${(Q * d / (k * A * dT)).toFixed(2)} s`
+      },
+      {
+        name: "Specific Heat Capacity",
+        inputs: ["Q (J)", "m (kg)", "ΔT (K)"],
+        formula: (Q, m, dT) => `c = ${(Q / (m * dT)).toFixed(2)} J/kg·K`
+      },
+      {
+        name: "Thermal Expansion",
+        inputs: ["α (/K)", "ΔT (K)", "L₀ (m)"],
+        formula: (a, dT, L0) => `ΔL = ${(a * dT * L0).toFixed(4)} m`
+      },
+      {
+        name: "RMS Speed of Gas Molecule",
+        inputs: ["T (K)", "M (kg/mol)"],
+        formula: (T, M) => `v_rms = ${Math.sqrt((3 * 8.314 * T) / M).toFixed(2)} m/s`
+      }
+    ];
+
+    const container = document.getElementById("calculators");
+
+    calculators.forEach((calc, index) => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const title = document.createElement("h3");
+      title.textContent = calc.name;
+      card.appendChild(title);
+
+      const inputElements = [];
+
+      calc.inputs.forEach((label, i) => {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.placeholder = label;
+        input.required = true;
+        inputElements.push(input);
+        card.appendChild(input);
+      });
+
+      const button = document.createElement("button");
+      button.textContent = "Calculate";
+
+      const result = document.createElement("div");
+      result.className = "result";
+
+      button.onclick = () => {
+        const values = inputElements.map(input => parseFloat(input.value));
+        if (values.some(v => isNaN(v))) {
+          result.textContent = "Please enter all values correctly.";
+        } else {
+          result.textContent = calc.formula(...values);
+        }
+      };
+
+      card.appendChild(button);
+      card.appendChild(result);
+      container.appendChild(card);
+    });
+  </script>
+</body>
+</html>
